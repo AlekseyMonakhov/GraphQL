@@ -51,15 +51,18 @@ export const jobByIdQuery = gql`
 `
 
 export const jobsQuery = gql`
-    query Jobs {
-        jobs {
-            title
-            id
-            date
-            company {
+    query Jobs($limit:Int, $offset: Int ) {
+        jobs(limit: $limit, offset: $offset) {
+            items {
+                title
                 id
-                name
+                date
+                company {
+                    id
+                    name
+                }
             }
+            totalCount
         }
     }
 `;
@@ -161,31 +164,31 @@ export const apolloClient = new ApolloClient({
 //     return jobs;
 // }
 
-export async function createJob({title, description}) {
-    const mutation = gql`
-        mutation createJob($input: CreateJobInput!) {
-            job:createJob(input: $input) {
-               ... JobDetail
-            }
-        }
-        ${jobDetailFragment}
-    `
-
-    const {data: {job}} = await apolloClient.mutate({
-        mutation,
-        variables: {
-            input: {
-                title,
-                description
-            }
-        },
-        update: (cache, {data}, options) => {
-            cache.writeQuery({
-                query: jobByIdQuery,
-                variables: {id: data.job.id},
-                data
-            })
-        }
-    })
-    return job
-}
+// export async function createJob({title, description}) {
+//     const mutation = gql`
+//         mutation createJob($input: CreateJobInput!) {
+//             job:createJob(input: $input) {
+//                ... JobDetail
+//             }
+//         }
+//         ${jobDetailFragment}
+//     `
+//
+//     const {data: {job}} = await apolloClient.mutate({
+//         mutation,
+//         variables: {
+//             input: {
+//                 title,
+//                 description
+//             }
+//         },
+//         update: (cache, {data}, options) => {
+//             cache.writeQuery({
+//                 query: jobByIdQuery,
+//                 variables: {id: data.job.id},
+//                 data
+//             })
+//         }
+//     })
+//     return job
+// }
